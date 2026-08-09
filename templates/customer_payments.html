@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Monthly Rent - JBS Residency</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial, Helvetica, sans-serif;background:#0b1220;color:#e5e7eb}
+    .bg{
+      position:fixed;inset:0;overflow:hidden;z-index:-1;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(59,130,246,.35), transparent 55%),
+                  radial-gradient(1000px 500px at 90% 30%, rgba(16,185,129,.25), transparent 55%),
+                  radial-gradient(800px 400px at 50% 90%, rgba(236,72,153,.18), transparent 60%),
+                  linear-gradient(180deg,#070c16,#0b1220);
+    }
+    .blob{
+      position:absolute;border-radius:50%;filter:blur(18px);
+      animation: floaty 8s ease-in-out infinite;opacity:.85;
+    }
+    .blob.b1{width:260px;height:260px;left:-60px;top:80px;background:#3b82f6;animation-duration:10s}
+    .blob.b2{width:220px;height:220px;right:-50px;top:140px;background:#10b981;animation-duration:12s;animation-delay:-2s}
+    .blob.b3{width:180px;height:180px;left:40%;bottom:-60px;background:#ec4899;animation-duration:11s;animation-delay:-4s}
+    @keyframes floaty{
+      0%,100%{transform:translate3d(0,0,0) scale(1)}
+      50%{transform:translate3d(0,-22px,0) scale(1.05)}
+    }
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;padding:14px 18px;
+      background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08);
+      backdrop-filter:blur(8px);position:sticky;top:0;z-index:10
+    }
+    .left{display:flex;align-items:center;gap:12px}
+    .avatar{
+      width:48px;height:48px;border-radius:50%;object-fit:cover;
+      border:2px solid rgba(59,130,246,.3)
+    }
+    .cid{font-weight:800;font-size:13px;color:#93c5fd}
+    .cname{font-weight:700;font-size:15px}
+    .menubar{
+      display:flex;gap:2px;padding:10px 18px;
+      background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.06)
+    }
+    .menubar a{
+      padding:8px 16px;border-radius:10px;color:#cbd5e1;text-decoration:none;
+      font-weight:600;font-size:13px;transition:all .15s
+    }
+    .menubar a:hover,.menubar a.active{background:rgba(59,130,246,.15);color:#93c5fd}
+    .content{padding:18px;max-width:960px;margin:0 auto}
+    .panel{
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;padding:20px;margin-bottom:14px;
+      box-shadow:0 18px 60px rgba(0,0,0,.25);backdrop-filter:blur(8px)
+    }
+    h3{margin:0 0 14px;font-size:16px;color:#93c5fd}
+    .rent-summary{
+      display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px
+    }
+    .rent-box{
+      padding:14px 18px;border-radius:12px;
+      background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);
+      flex:1;min-width:120px;text-align:center
+    }
+    .rent-box .value{font-size:22px;font-weight:900;color:#22c55e}
+    .rent-box .label{font-size:11px;color:#9ca3af;margin-top:4px}
+    .table-wrap{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    th{padding:10px 8px;text-align:left;color:#9ca3af;font-weight:700;font-size:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+    td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.04)}
+    .pill{padding:4px 10px;border-radius:999px;font-weight:700;font-size:11px;display:inline-block}
+    .paid{background:rgba(34,197,94,.15);color:#4ade80}
+    .unpaid{background:rgba(239,68,68,.15);color:#f87171}
+    .pending{background:rgba(234,179,8,.15);color:#facc15}
+    .btn{
+      appearance:none;border:0;cursor:pointer;border-radius:8px;
+      font-weight:700;transition:all .15s;padding:6px 12px;font-size:12px
+    }
+    .btn.mark-paid{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.2)}
+    .btn.mark-unpaid{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+    .btn:hover{transform:translateY(-1px);filter:brightness(1.1)}
+    .btn.logout{
+      padding:8px 14px;background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.3);
+      color:#fca5a5;font-size:12px;text-decoration:none;border-radius:10px
+    }
+    .btn.exit{
+      padding:8px 14px;background:rgba(234,179,8,.15);border:1px solid rgba(234,179,8,.3);
+      color:#facc15;font-size:12px;border-radius:10px
+    }
+    .btn.exit:hover{background:rgba(234,179,8,.25)}
+    .btn.danger{
+      padding:8px 14px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);
+      color:#f87171;font-size:12px;border-radius:10px
+    }
+    .btn.danger:hover{background:rgba(239,68,68,.25)}
+    .stat-badge{
+      display:inline-block;margin-top:4px;padding:2px 8px;border-radius:999px;
+      font-size:10px;font-weight:700
+    }
+    .stat-badge.exited{background:rgba(234,179,8,.15);color:#facc15;border:1px solid rgba(234,179,8,.2)}
+    footer{margin-top:26px;padding:18px;text-align:center;color:#9ca3af;font-size:12px}
+    footer a{color:#cbd5e1;text-decoration:none;font-weight:700}
+    footer a:hover{text-decoration:underline}
+    @media (max-width:768px){
+      .topbar{flex-direction:column;gap:8px;padding:12px}
+      .topbar .left,.topbar div[style*="text-align:center"]{width:100%;text-align:center!important}
+      .topbar .left{justify-content:center}
+      .topbar div[style*="display:flex;gap:8px"]{justify-content:center;width:100%}
+      .menubar{overflow-x:auto;gap:0;padding:8px 12px}
+      .menubar a{flex-shrink:0;padding:8px 12px;font-size:12px}
+      .content{padding:12px}
+      .panel{padding:14px}
+      .rent-summary{flex-direction:column;gap:10px}
+      .rent-box{padding:10px}
+      .rent-box .value{font-size:18px}
+      th,td{padding:8px 6px;font-size:12px}
+      td form[style*="display:flex"]{flex-direction:column;gap:4px}
+      td form button{width:100%;justify-content:center}
+    }
+    @media (max-width:400px){
+      .content{padding:8px}
+      .panel{padding:10px}
+      th,td{padding:6px 4px;font-size:11px}
+    }
+  </style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
+  <div class="topbar">
+    <div class="left">
+      {% if customer.customer_photo_path %}
+        <img class="avatar" src="/uploads/{{ customer.customer_photo_path }}" onerror="this.style.display='none'" />
+      {% else %}
+        <img class="avatar" src="" onerror="this.style.display='none'" />
+      {% endif %}
+      <div>
+        <div class="cname">{{ customer.name }}</div>
+        <div class="cid">{{ customer.customer_id }}</div>
+        {% if customer.status == 'exited' %}
+          <div class="stat-badge exited">✦ View-Only (Exited)</div>
+        {% endif %}
+      </div>
+    </div>
+    <div style="text-align:center;flex:1">
+      <div style="font-size:13px;font-weight:700;color:#93c5fd">{{ owner.residency_name }}</div>
+      <div style="font-size:11px;color:#6b7280">Residency</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      {% if customer.status == 'active' %}
+        <form method="POST" action="/customer/exit-residence" onsubmit="return confirm('Exit residence? Your account will become view-only and you cannot make payments. Continue?')" style="display:inline">
+          <button type="submit" class="btn exit">Exit Residence</button>
+        </form>
+        <form method="POST" action="/customer/delete-account" onsubmit="return confirm('Delete your account permanently? Your data will be archived with the owner but you cannot login again. Continue?')" style="display:inline">
+          <button type="submit" class="btn danger">Delete Account</button>
+        </form>
+      {% endif %}
+      <a href="/customer/logout" class="btn logout">Logout</a>
+    </div>
+  </div>
+
+  <div class="menubar">
+    <a href="/customer/dashboard">My Details</a>
+    <a href="/customer/payments" class="active">Monthly Rent</a>
+  </div>
+
+  <div class="content">
+    <div class="panel">
+      <h3>Rent Payment Records</h3>
+      <div class="rent-summary">
+        <div class="rent-box">
+          <div class="value">&#x20B9;{{ rentMonthly }}</div>
+          <div class="label">Monthly Rent</div>
+        </div>
+        <div class="rent-box">
+          <div class="value">{{ monthList|length }}</div>
+          <div class="label">Total Months</div>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Month</th><th>Status (Owner)</th><th>Your Choice</th><th>Action</th></tr></thead>
+          <tbody>
+            {% for m in monthList %}
+              {% set key = m.year ~ '-' ~ m.month %}
+              {% set p = pmap.get(key, None) %}
+              <tr>
+                <td>{{ m.month_name }} {{ m.year }}</td>
+                <td>
+                  {% if p and p.owner_confirmed == 1 and p.status == 'paid' %}<span class="pill paid">&#10003; Paid</span>
+                  {% elif p and p.owner_confirmed == 1 and p.status == 'unpaid' %}<span class="pill unpaid">&#10007; Unpaid</span>
+                  {% elif p and p.status == 'paid' %}<span class="pill paid">Paid (unconfirmed)</span>
+                  {% elif p and p.status == 'unpaid' %}<span class="pill unpaid">Unpaid</span>
+                  {% else %}<span class="pill pending">Pending</span>{% endif %}
+                </td>
+                <td>
+                  {% if p and p.customer_choice == 'paid' %}<span class="pill paid">&#10003; Paid</span>
+                  {% elif p and p.customer_choice == 'unpaid' %}<span class="pill unpaid">&#10007; Unpaid</span>
+                  {% else %}<span class="pill pending">Not selected</span>{% endif %}
+                </td>
+                <td>
+                  {% if customer.status == 'active' %}
+                    <form method="POST" action="/customer/payment-choice" style="display:flex;gap:6px">
+                      <input type="hidden" name="year" value="{{ m.year }}" />
+                      <input type="hidden" name="month" value="{{ m.month }}" />
+                      {% if p and p.customer_choice == 'paid' %}
+                        <button type="submit" name="choice" value="unpaid" class="btn mark-unpaid">Mark Unpaid</button>
+                      {% elif p and p.customer_choice == 'unpaid' %}
+                        <button type="submit" name="choice" value="paid" class="btn mark-paid">Mark Paid</button>
+                      {% else %}
+                        <button type="submit" name="choice" value="paid" class="btn mark-paid">Paid</button>
+                        <button type="submit" name="choice" value="unpaid" class="btn mark-unpaid">Unpaid</button>
+                      {% endif %}
+                    </form>
+                  {% else %}
+                    <span style="color:#6b7280;font-size:12px">View-only</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <b>JBS Residency</b> &copy; 2026 &middot; <a href="/">Home</a>
+  </footer>
+</body>
+</html>
+
