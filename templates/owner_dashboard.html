@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Owner Dashboard - JBS Residency</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial, Helvetica, sans-serif;background:#0b1220;color:#e5e7eb}
+    .bg{
+      position:fixed;inset:0;overflow:hidden;z-index:-1;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(59,130,246,.35), transparent 55%),
+                  radial-gradient(1000px 500px at 90% 30%, rgba(16,185,129,.25), transparent 55%),
+                  radial-gradient(800px 400px at 50% 90%, rgba(236,72,153,.18), transparent 60%),
+                  linear-gradient(180deg,#070c16,#0b1220);
+    }
+    .blob{
+      position:absolute;border-radius:50%;filter:blur(18px);
+      animation: floaty 8s ease-in-out infinite;opacity:.85;
+    }
+    .blob.b1{width:260px;height:260px;left:-60px;top:80px;background:#3b82f6;animation-duration:10s}
+    .blob.b2{width:220px;height:220px;right:-50px;top:140px;background:#10b981;animation-duration:12s;animation-delay:-2s}
+    .blob.b3{width:180px;height:180px;left:40%;bottom:-60px;background:#ec4899;animation-duration:11s;animation-delay:-4s}
+    @keyframes floaty{
+      0%,100%{transform:translate3d(0,0,0) scale(1)}
+      50%{transform:translate3d(0,-22px,0) scale(1.05)}
+    }
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;padding:14px 18px;
+      background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08);
+      backdrop-filter:blur(8px);position:sticky;top:0;z-index:10
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:40px;height:40px;border-radius:10px;
+      background:linear-gradient(135deg,#2563eb,#22c55e);
+      display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px
+    }
+    .ownername{font-weight:800;font-size:14px}
+    .resname{font-size:12px;color:#93c5fd}
+    .menubar{
+      display:flex;gap:2px;padding:10px 18px;
+      background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.06)
+    }
+    .menubar a{
+      padding:8px 16px;border-radius:10px;color:#cbd5e1;text-decoration:none;
+      font-weight:600;font-size:13px;transition:all .15s
+    }
+    .menubar a:hover,.menubar a.active{background:rgba(59,130,246,.15);color:#93c5fd}
+    .content{padding:18px;max-width:960px;margin:0 auto}
+    .stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+    @media (max-width:500px){.stats{grid-template-columns:1fr}}
+    .stat-card{
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;padding:20px;text-align:center;
+      box-shadow:0 18px 60px rgba(0,0,0,.25);backdrop-filter:blur(8px)
+    }
+    .stat-card .num{font-size:36px;font-weight:900;background:linear-gradient(135deg,#22c55e,#3b82f6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+    .stat-card .label{font-size:13px;color:#9ca3af;margin-top:6px}
+    .panel{
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;padding:20px;
+      box-shadow:0 18px 60px rgba(0,0,0,.25);backdrop-filter:blur(8px)
+    }
+    .panel h3{margin:0 0 10px;font-size:16px;color:#93c5fd}
+    .panel p{font-size:13px;color:#cbd5e1;line-height:1.6}
+    .btn{
+      appearance:none;border:0;cursor:pointer;border-radius:12px;
+      font-weight:800;transition:transform .15s ease,filter .15s ease;
+      text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px
+    }
+    .btn.menu{
+      padding:10px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+      color:#e5e7eb;font-size:13px;margin-top:12px;width:100%
+    }
+    .btn.menu:hover{background:rgba(59,130,246,.15);transform:translateY(-1px)}
+    .btn.logout{
+      padding:8px 14px;background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.3);
+      color:#fca5a5;font-size:12px;text-decoration:none;border-radius:10px
+    }
+    .btn.logout:hover{background:rgba(239,68,68,.3)}
+    .owner-row{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+    .owner-qr{flex-shrink:0;width:130px;text-align:center}
+    .owner-qr img{width:120px;height:120px;border-radius:10px;border:2px solid rgba(59,130,246,.2);object-fit:cover}
+    .owner-qr .qr-label{font-size:11px;color:#9ca3af;margin-top:6px}
+    .owner-info{flex:1;min-width:180px;font-size:13px;line-height:1.8}
+    .owner-info div{padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+    .owner-info b{color:#93c5fd}
+    footer{margin-top:26px;padding:18px;text-align:center;color:#9ca3af;font-size:12px}
+    footer a{color:#cbd5e1;text-decoration:none;font-weight:700}
+    footer a:hover{text-decoration:underline}
+@media (max-width:768px){
+      .topbar{flex-wrap:wrap;gap:8px;padding:12px}
+      .topbar .brand{width:auto;min-width:0;text-align:left}
+      .topbar div[style*="text-align:center"]{width:100%;text-align:center!important}
+      .topbar div[style*="display:flex;gap:8px"]{justify-content:center;width:100%}
+      .menubar{overflow-x:auto;gap:0;padding:8px 12px}
+      .menubar a{flex-shrink:0;padding:8px 12px;font-size:12px}
+      .content{padding:12px}
+      .stats{grid-template-columns:1fr;gap:10px}
+      .stat-card .num{font-size:28px}
+      .owner-row{flex-direction:column;align-items:center;text-align:center}
+      .owner-qr{width:100%}
+      .owner-qr img{width:100px;height:100px}
+    }
+    @media (max-width:400px){
+      .content{padding:8px}
+      .stat-card{padding:14px}
+      .stat-card .num{font-size:24px}
+      .panel{padding:14px}
+    }
+  </style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
+  <div class="topbar">
+    <div class="brand">
+      {% if owner.profile_photo_path %}
+        <img src="/uploads/{{ owner.profile_photo_path }}" alt="Profile" style="width:40px;height:40px;border-radius:10px;object-fit:cover;border:2px solid rgba(59,130,246,.3)" />
+      {% else %}
+        <div class="logo">JBS</div>
+      {% endif %}
+      <div>
+        <div class="ownername">{{ owner.owner_name }}</div>
+        <div style="font-size:11px;color:#6b7280;margin-top:2px">ID: {{ owner.user_id }}</div>
+      </div>
+    </div>
+    <div style="text-align:center;flex:1">
+      <div style="font-size:13px;font-weight:700;color:#93c5fd">{{ owner.residency_name }}</div>
+      <div style="font-size:11px;color:#6b7280">Residency</div>
+    </div>
+<div style="display:flex;gap:8px;align-items:center">
+      <a href="/owner/logout" class="btn logout">Logout</a>
+      <button type="button" class="btn logout danger" onclick="confirmDeleteAccount()">Delete Account</button>
+    </div>
+  </div>
+
+  <div class="menubar">
+    <a href="/owner/dashboard" class="active">Dashboard</a>
+    <a href="/owner/customers">Customers</a>
+    <a href="/owner/details">Owner Details</a>
+  </div>
+
+  <div class="content">
+    <div class="stats">
+      <div class="stat-card">
+        <div class="num">{{ customersCount }}</div>
+        <div class="label">Total Customers</div>
+      </div>
+      <div class="stat-card">
+        <div class="num">&#x20B9;{{ totalConfirmed }}</div>
+        <div class="label">Confirmed Revenue</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Quick Actions</h3>
+      <p>Use the menu above to manage your customers, view payment details, or update your owner profile and UPI QR code.</p>
+      <a href="/owner/customers" class="btn menu">View All Customers</a>
+      <a href="/owner/details" class="btn menu">Update Owner Details</a>
+    </div>
+
+    <div class="panel">
+      <h3>Your QR &amp; Payment Details</h3>
+      <div class="owner-row">
+        {% if owner.qr_code_path %}
+          <div class="owner-qr">
+            <img src="/uploads/{{ owner.qr_code_path }}" alt="QR Code" onerror="this.style.display='none'" />
+            <div class="qr-label">Your UPI QR Code</div>
+          </div>
+        {% endif %}
+        <div class="owner-info">
+          <div><b>Owner:</b> {{ owner.owner_name }}</div>
+          <div><b>Residency:</b> {{ owner.residency_name }}</div>
+          <div><b>UPI ID:</b> {{ owner.upi_id }}</div>
+          <div><b>Mobile:</b> {{ owner.mobile_no }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<footer>
+    <b>JBS Residency</b> &copy; 2026 &middot; <a href="/">Home</a>
+  </footer>
+
+  <script>
+    function confirmDeleteAccount() {
+      // First warning popup
+      var first = confirm('Are you sure you want to delete your account?');
+      if (!first) return;
+
+      // Second final confirmation popup
+      var second = confirm('WARNING: This will permanently delete your account and ALL customer accounts and their data. This action cannot be undone. Do you still want to continue?');
+      if (!second) return;
+
+      // Submit the deletion request
+      var form = document.createElement('form');
+      form.method = 'POST';
+      form.action = '/owner/delete-account';
+      document.body.appendChild(form);
+      form.submit();
+    }
+  </script>
+</body>
+</html>
+
