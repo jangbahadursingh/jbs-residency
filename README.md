@@ -2,8 +2,6 @@
 
 A **Flask**-based web application for managing residency (PG) rent payments. It connects two roles — **Owners** (who run the residency and collect rent) and **Customers** (the residents) — and lets both sides track monthly rent, confirm payments, and manage their accounts through a clean, dark-themed dashboard.
 
-> **Note:** This project was originally built with Node.js/Express and EJS templates, then fully converted to **Python + Flask + Jinja2**.
-
 ---
 
 ## ✨ Features
