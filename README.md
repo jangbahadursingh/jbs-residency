@@ -2,6 +2,8 @@
 
 A **Flask**-based web application for managing residency (PG) rent payments. It connects two roles — **Owners** (who run the residency and collect rent) and **Customers** (the residents) — and lets both sides track monthly rent, confirm payments, and manage their accounts through a clean, dark-themed dashboard.
 
+**Live Demo:**[https://jbsresidency.pythonanywhere.com/]
+
 ---
 
 ## ✨ Features
@@ -28,13 +30,6 @@ A **Flask**-based web application for managing residency (PG) rent payments. It 
 - **Exit Residence** — Mark yourself as exited from the residence.
 - **Delete Account** — Remove your account (logged out after deletion).
 
-### 🔒 Security & UX
-- bcrypt password hashing for owners.
-- CAPTCHA protection on customer login.
-- 6 MB upload size limit.
-- No-cache headers + bfcache-prevention script to protect private pages after logout/register.
-- Foreign-key cascade deletes and uploaded-file cleanup on account deletion.
-
 ---
 
 ## 🛠️ Tech Stack
@@ -44,32 +39,10 @@ A **Flask**-based web application for managing residency (PG) rent payments. It 
 | Backend     | Python 3 + Flask 3.1.0               |
 | Password    | bcrypt 4.0.1                         |
 | File upload | Werkzeug 3.1.3 (`secure_filename`)   |
-| Database    | SQLite (`jbs.db`)                    |
+| Database    | SQLite (`database_filename`)                    |
 | Templates   | Jinja2 (converted from EJS)          |
 | Frontend    | HTML, CSS (dark theme, responsive)   |
 
----
-
-## 📁 Project Structure
-
-```
-jbs-residency/
-├── README.md
-└── flask_app/
-    ├── app.py                 # Main Flask application (all routes & logic)
-    ├── requirements.txt      # Python dependencies
-    ├── TODO.md               # Conversion progress & deployment notes
-    ├── jbs.db                # SQLite database (auto-created)
-    ├── templates/            # Jinja2 HTML templates
-    │   ├── home.html
-    │   ├── owner_*.html      # Owner login, register, dashboard, details, etc.
-    │   ├── customer_*.html   # Customer login, register, dashboard, payments, etc.
-    │   └── partials/         # Reusable partial templates (e.g., footer.html)
-    └── uploads/              # Uploaded files (QR codes, Aadhaar, photos)
-        ├── misc/
-        ├── owner_qr/
-        └── profiles/
-```
 
 ---
 
@@ -104,7 +77,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-The app will start at **http://localhost:5000** (host `0.0.0.0`, port `5000`).
+The app will start at **http://localhost:**.
 
 ---
 
@@ -117,7 +90,6 @@ export FLASK_SECRET="your-very-secret-key"   # macOS / Linux
 set FLASK_SECRET="your-very-secret-key"      # Windows (CMD)
 ```
 
-If not set, a default development secret is used (`change_this_secret_jbs_residency_2025`). **Always set a strong custom secret in production.**
 
 ---
 
@@ -136,40 +108,6 @@ If not set, a default development secret is used (`change_this_secret_jbs_reside
 3. Log in using **Customer ID + DOB + CAPTCHA**.
 4. From the **Payments** page, mark each month as *paid* or *unpaid*.
 5. Manage your profile photo/details or exit/delete your account from the dashboard.
-
----
-
-## ☁️ Deployment Notes (PythonAnywhere)
-
-This app is designed to run on PythonAnywhere:
-
-1. Push the project to a Git repository.
-2. Create a Web app on PythonAnywhere (Python 3.x, manual config).
-3. Point the **WSGI file** to `app.py`.
-4. Set the `FLASK_SECRET` environment variable.
-5. Test the live deployment.
-
-See `flask_app/TODO.md` for the full deployment checklist.
-
----
-
-## 🗄️ Database
-
-The database (`jbs.db`) is created automatically on first run. It contains three tables:
-
-- **`owners`** — residency owner account details, UPI & QR info, credentials.
-- **`customers`** — resident details, Aadhaar/photo paths, room rent configuration, status.
-- **`payments`** — one row per customer per month (year + month), with payment status, customer choice, and owner confirmation.
-
-12 months of payment rows are seeded automatically when a customer registers, and rows are generated progressively as periods advance.
-
----
-
-## 🧪 Troubleshooting
-
-- **Port already in use?** Change the port in `app.py` (`app.run(host='0.0.0.0', port=5000, ...)`).
-- **Upload fails?** Ensure files are under the 6 MB limit.
-- **Database schema updates?** The app runs `ALTER TABLE` migrations in `init_db()` where needed.
 
 ---
 
