@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Customer Dashboard - JBS Residency</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial, Helvetica, sans-serif;background:#0b1220;color:#e5e7eb}
+    .bg{
+      position:fixed;inset:0;overflow:hidden;z-index:-1;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(59,130,246,.35), transparent 55%),
+                  radial-gradient(1000px 500px at 90% 30%, rgba(16,185,129,.25), transparent 55%),
+                  radial-gradient(800px 400px at 50% 90%, rgba(236,72,153,.18), transparent 60%),
+                  linear-gradient(180deg,#070c16,#0b1220);
+    }
+    .blob{
+      position:absolute;border-radius:50%;filter:blur(18px);
+      animation: floaty 8s ease-in-out infinite;opacity:.85;
+    }
+    .blob.b1{width:260px;height:260px;left:-60px;top:80px;background:#3b82f6;animation-duration:10s}
+    .blob.b2{width:220px;height:220px;right:-50px;top:140px;background:#10b981;animation-duration:12s;animation-delay:-2s}
+    .blob.b3{width:180px;height:180px;left:40%;bottom:-60px;background:#ec4899;animation-duration:11s;animation-delay:-4s}
+    @keyframes floaty{
+      0%,100%{transform:translate3d(0,0,0) scale(1)}
+      50%{transform:translate3d(0,-22px,0) scale(1.05)}
+    }
+    .topbar{
+      display:flex;align-items:center;justify-content:space-between;padding:14px 18px;
+      background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08);
+      backdrop-filter:blur(8px);position:sticky;top:0;z-index:10
+    }
+    .left{display:flex;align-items:center;gap:12px}
+    .avatar{
+      width:48px;height:48px;border-radius:50%;object-fit:cover;
+      border:2px solid rgba(59,130,246,.3)
+    }
+    .cid{font-weight:800;font-size:13px;color:#93c5fd}
+    .cname{font-weight:700;font-size:15px}
+    .menubar{
+      display:flex;gap:2px;padding:10px 18px;
+      background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.06)
+    }
+    .menubar a{
+      padding:8px 16px;border-radius:10px;color:#cbd5e1;text-decoration:none;
+      font-weight:600;font-size:13px;transition:all .15s
+    }
+    .menubar a:hover,.menubar a.active{background:rgba(59,130,246,.15);color:#93c5fd}
+    .content{padding:18px;max-width:960px;margin:0 auto}
+    .panel{
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;padding:20px;margin-bottom:14px;
+      box-shadow:0 18px 60px rgba(0,0,0,.25);backdrop-filter:blur(8px)
+    }
+    h3{margin:0 0 14px;font-size:16px;color:#93c5fd}
+    label{display:block;margin-top:12px;font-size:13px;color:#cbd5e1}
+    input{
+      width:100%;padding:10px;margin-top:6px;
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+      border-radius:10px;color:#e5e7eb;font-size:13px;outline:none;transition:border .2s
+    }
+    input:focus{border-color:#3b82f6}
+    .btn{
+      appearance:none;border:0;cursor:pointer;border-radius:10px;
+      font-weight:700;transition:transform .15s ease,filter .15s ease;
+      text-decoration:none;display:inline-flex;align-items:center;justify-content:center
+    }
+    .btn.save{
+      margin-top:14px;padding:10px 18px;
+      background:linear-gradient(135deg,#22c55e,#3b82f6);
+      color:#0b1220;font-size:13px;box-shadow:0 8px 20px rgba(34,197,94,.18)
+    }
+    .btn.save:hover{transform:translateY(-1px);filter:saturate(1.1)}
+    .btn.logout{
+      padding:8px 14px;background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.3);
+      color:#fca5a5;font-size:12px;text-decoration:none;border-radius:10px
+    }
+    .btn.logout:hover{background:rgba(239,68,68,.3)}
+    .btn.exit{
+      padding:8px 14px;background:rgba(234,179,8,.15);border:1px solid rgba(234,179,8,.3);
+      color:#facc15;font-size:12px;border-radius:10px
+    }
+    .btn.exit:hover{background:rgba(234,179,8,.25)}
+    .btn.danger{
+      padding:8px 14px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);
+      color:#f87171;font-size:12px;border-radius:10px
+    }
+    .btn.danger:hover{background:rgba(239,68,68,.25)}
+    .stat-badge{
+      display:inline-block;margin-top:4px;padding:2px 8px;border-radius:999px;
+      font-size:10px;font-weight:700
+    }
+    .stat-badge.exited{background:rgba(234,179,8,.15);color:#facc15;border:1px solid rgba(234,179,8,.2)}
+    .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;line-height:1.8}
+    @media (max-width:500px){.detail-grid{grid-template-columns:1fr}}
+    .detail-grid div{padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+    .detail-grid b{color:#93c5fd}
+    .aadhar-imgs{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+    .aadhar-imgs .img-box{flex:1;min-width:160px;text-align:center}
+    .aadhar-imgs .img-box img{width:100%;max-width:240px;border-radius:10px;border:2px solid rgba(59,130,246,.2);object-fit:cover}
+    .aadhar-imgs .img-label{font-size:11px;color:#9ca3af;margin-top:6px}
+    .owner-row{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap}
+    .owner-qr{flex-shrink:0;width:130px;text-align:center}
+    .owner-qr img{width:120px;height:120px;border-radius:10px;border:2px solid rgba(59,130,246,.2);object-fit:cover}
+    .owner-qr .qr-label{font-size:11px;color:#9ca3af;margin-top:6px}
+    .owner-info{flex:1;min-width:180px;font-size:13px;line-height:1.8}
+    .owner-info div{padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+    .owner-info b{color:#93c5fd}
+    footer{margin-top:26px;padding:18px;text-align:center;color:#9ca3af;font-size:12px}
+    footer a{color:#cbd5e1;text-decoration:none;font-weight:700}
+    footer a:hover{text-decoration:underline}
+    @media (max-width:768px){
+      .topbar{flex-direction:column;gap:8px;padding:12px}
+      .topbar .left,.topbar div[style*="text-align:center"]{width:100%;text-align:center!important}
+      .topbar .left{justify-content:center}
+      .topbar div[style*="display:flex;gap:8px"]{justify-content:center;width:100%}
+      .menubar{overflow-x:auto;gap:0;padding:8px 12px}
+      .menubar a{flex-shrink:0;padding:8px 12px;font-size:12px}
+      .content{padding:12px}
+      .panel{padding:14px}
+      .owner-row{flex-direction:column;align-items:center;text-align:center}
+      .owner-qr{width:100%}
+      .owner-qr img{width:100px;height:100px}
+      .aadhar-imgs{flex-direction:column;align-items:center}
+      .aadhar-imgs .img-box{width:100%;max-width:280px}
+      .aadhar-imgs .img-box img{max-width:100%}
+    }
+    @media (max-width:500px){
+      .detail-grid{grid-template-columns:1fr}
+    }
+    @media (max-width:400px){
+      .content{padding:8px}
+      .panel{padding:10px}
+      .rent-box{padding:10px}
+      .rent-box .value{font-size:18px}
+    }
+  </style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
+    <div class="topbar">
+    <div class="left">
+      {% if customer.customer_photo_path %}
+        <img class="avatar" src="/uploads/{{ customer.customer_photo_path }}" onerror="this.style.display='none'" />
+      {% else %}
+        <img class="avatar" src="" onerror="this.style.display='none'" />
+      {% endif %}
+      <div>
+        <div class="cname">{{ customer.name }}</div>
+        <div class="cid">{{ customer.customer_id }}</div>
+        {% if customer.status == 'exited' %}
+          <div class="stat-badge exited">✦ View-Only (Exited)</div>
+        {% endif %}
+      </div>
+    </div>
+    <div style="text-align:center;flex:1">
+      <div style="font-size:13px;font-weight:700;color:#93c5fd">{{ owner.residency_name }}</div>
+      <div style="font-size:11px;color:#6b7280">Residency</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      {% if customer.status == 'active' %}
+        <form method="POST" action="/customer/exit-residence" onsubmit="return confirm('Exit residence? Your account will become view-only and you cannot make payments. Continue?')" style="display:inline">
+          <button type="submit" class="btn exit">Exit Residence</button>
+        </form>
+        <form method="POST" action="/customer/delete-account" onsubmit="return confirm('Delete your account permanently? Your data will be archived with the owner but you cannot login again. Continue?')" style="display:inline">
+          <button type="submit" class="btn danger">Delete Account</button>
+        </form>
+      {% endif %}
+      <a href="/customer/logout" class="btn logout">Logout</a>
+    </div>
+  </div>
+
+  <div class="menubar">
+    <a href="/customer/dashboard" class="active">My Details</a>
+    <a href="/customer/payments">Monthly Rent</a>
+  </div>
+
+    <div class="content">
+    <div class="panel">
+      <h3>Profile Photo</h3>
+      <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+        {% if customer.customer_photo_path %}
+          <img src="/uploads/{{ customer.customer_photo_path }}" onerror="this.style.display='none'" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid rgba(59,130,246,.3)" />
+        {% else %}
+          <div style="width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;border:2px dashed rgba(255,255,255,.15);font-size:11px;color:#6b7280;text-align:center">No Photo</div>
+        {% endif %}
+        {% if customer.status == 'active' %}
+          <form method="POST" action="/customer/upload-photo" enctype="multipart/form-data">
+            <input type="file" name="customer_photo" accept="image/*" required style="margin-bottom:8px" />
+            <button type="submit" class="btn save" style="margin-top:0">Upload Photo</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>{% if customer.status == 'exited' %}Profile Details{% else %}Edit Profile{% endif %}</h3>
+      {% if customer.status == 'active' %}
+        <form method="POST" action="/customer/save-profile">
+          <label>Name</label>
+          <input name="name" value="{{ customer.name }}" required />
+          <label>Mobile No</label>
+          <input name="mobile_no" value="{{ customer.mobile_no }}" required />
+          <button type="submit" class="btn save">Save Changes</button>
+        </form>
+      {% else %}
+        <div class="detail-grid" style="margin-top:4px">
+          <div><b>Name:</b> {{ customer.name }}</div>
+          <div><b>Mobile:</b> {{ customer.mobile_no }}</div>
+        </div>
+        <div style="margin-top:12px;padding:10px 14px;border-radius:10px;background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.15);color:#facc15;font-size:13px;line-height:1.5">
+          ✦ This account is in <b>view-only mode</b>. You have exited the residence. To re-activate, please contact the owner.
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="panel">
+      <h3>Read-only Details</h3>
+      <div class="detail-grid">
+        <div><b>Father/Husband:</b> {{ customer.father_name }}</div>
+        <div><b>DOB:</b> {{ customer.dob }}</div>
+        <div><b>Mobile:</b> {{ customer.mobile_no }}</div>
+        <div><b>Address:</b> {{ customer.address }}</div>
+        <div><b>Occupation:</b> {{ customer.occupation }}</div>
+        <div><b>Room Rent:</b> {{ customer.room_rent_type }} - &#x20B9;{{ customer.room_rent_monthly }}/month</div>
+        <div><b>Security:</b> &#x20B9;{{ customer.security_money }}</div>
+      </div>
+
+      {% if customer.aadhar_front_path or customer.aadhar_back_path %}
+        <div class="aadhar-imgs">
+          {% if customer.aadhar_front_path %}
+            <div class="img-box">
+              <img src="/uploads/{{ customer.aadhar_front_path }}" alt="Aadhar Front" onerror="this.style.display='none'" />
+              <div class="img-label">Aadhar Front</div>
+            </div>
+          {% endif %}
+          {% if customer.aadhar_back_path %}
+            <div class="img-box">
+              <img src="/uploads/{{ customer.aadhar_back_path }}" alt="Aadhar Back" onerror="this.style.display='none'" />
+              <div class="img-label">Aadhar Back</div>
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="panel">
+      <h3>Owner Details (for payment)</h3>
+      <div class="owner-row">
+        {% if owner.qr_code_path %}
+          <div class="owner-qr">
+            <img src="/uploads/{{ owner.qr_code_path }}" alt="QR Code" onerror="this.style.display='none'" />
+            <div class="qr-label">Scan to Pay</div>
+          </div>
+        {% endif %}
+        <div class="owner-info">
+          <div><b>Owner:</b> {{ owner.owner_name }}</div>
+          <div><b>Residency:</b> {{ owner.residency_name }}</div>
+          <div><b>UPI ID:</b> {{ owner.upi_id }}</div>
+          <div><b>Mobile:</b> {{ owner.mobile_no }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <b>JBS Residency</b> &copy; 2026 &middot; <a href="/">Home</a>
+  </footer>
+</body>
+</html>
+
