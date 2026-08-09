@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Owner Login - JBS Residency</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial, Helvetica, sans-serif;background:#0b1220;color:#e5e7eb}
+    .bg{
+      position:fixed;inset:0;overflow:hidden;z-index:-1;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(59,130,246,.35), transparent 55%),
+                  radial-gradient(1000px 500px at 90% 30%, rgba(16,185,129,.25), transparent 55%),
+                  radial-gradient(800px 400px at 50% 90%, rgba(236,72,153,.18), transparent 60%),
+                  linear-gradient(180deg,#070c16,#0b1220);
+    }
+    .blob{
+      position:absolute;border-radius:50%;filter:blur(18px);
+      animation: floaty 8s ease-in-out infinite;opacity:.85;
+    }
+    .blob.b1{width:260px;height:260px;left:-60px;top:80px;background:#3b82f6;animation-duration:10s}
+    .blob.b2{width:220px;height:220px;right:-50px;top:140px;background:#10b981;animation-duration:12s;animation-delay:-2s}
+    .blob.b3{width:180px;height:180px;left:40%;bottom:-60px;background:#ec4899;animation-duration:11s;animation-delay:-4s}
+    @keyframes floaty{
+      0%,100%{transform:translate3d(0,0,0) scale(1)}
+      50%{transform:translate3d(0,-22px,0) scale(1.05)}
+    }
+    .wrap{max-width:480px;margin:40px auto;padding:28px 18px}
+    header{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:24px}
+    .logo{
+      width:44px;height:44px;border-radius:12px;
+      background:linear-gradient(135deg,#2563eb,#22c55e);
+      box-shadow:0 10px 30px rgba(37,99,235,.25);
+      display:flex;align-items:center;justify-content:center;font-weight:900
+    }
+    header h1{margin:0;font-size:18px}
+    .card{
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;padding:24px;
+      box-shadow:0 18px 60px rgba(0,0,0,.25);
+      backdrop-filter:blur(8px)
+    }
+    h2{margin:0 0 16px;font-size:20px}
+    label{display:block;margin-top:14px;font-size:13px;color:#cbd5e1}
+    input{
+      width:100%;padding:12px;margin-top:6px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:10px;color:#e5e7eb;font-size:14px;
+      outline:none;transition:border .2s
+    }
+    input:focus{border-color:#3b82f6}
+    input::placeholder{color:#6b7280}
+    .btn{
+      appearance:none;border:0;cursor:pointer;border-radius:12px;
+      font-weight:800;transition:transform .15s ease,filter .15s ease;
+      text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px
+    }
+    .btn.primary{
+      margin-top:18px;width:100%;padding:14px;
+      background:linear-gradient(135deg,#22c55e,#3b82f6);
+      color:#0b1220;font-size:15px;box-shadow:0 12px 28px rgba(34,197,94,.18)
+    }
+    .btn.primary:hover{transform:translateY(-2px);filter:saturate(1.1)}
+    .err{
+      background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);
+      border-radius:10px;padding:12px;margin-bottom:14px;color:#fca5a5;font-size:13px
+    }
+    .hint{font-size:12px;color:#9ca3af;margin-top:10px;text-align:center}
+    .hint a{color:#60a5fa;text-decoration:none;font-weight:700}
+    .hint a:hover{text-decoration:underline}
+    footer{margin-top:26px;padding:18px;text-align:center;color:#9ca3af;font-size:12px}
+    footer a{color:#cbd5e1;text-decoration:none;font-weight:700}
+    footer a:hover{text-decoration:underline}
+    @media (max-width:768px){
+      .wrap{margin:20px auto;padding:18px 12px}
+      .card{padding:18px}
+    }
+    @media (max-width:400px){
+      .wrap{margin:10px auto;padding:14px 8px}
+      h2{font-size:18px}
+    }
+  </style>
+</head>
+<body>
+  <div class="bg" aria-hidden="true">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
+  </div>
+
+  <div class="wrap">
+    <header>
+      <div class="logo">JBS</div>
+      <h1>JBS Residency</h1>
+    </header>
+
+    <div class="card">
+      <h2>Owner Login</h2>
+
+      {% if error %}<div class="err">{{ error }}</div>{% endif %}
+
+      <form method="POST" action="/owner/login">
+        <label>User ID</label>
+        <input name="user_id" required placeholder="Enter your user ID" />
+
+        <label>Password</label>
+        <input type="password" name="password" required placeholder="Enter your password" />
+
+        <button type="submit" class="btn primary">Login</button>
+      </form>
+
+      <p class="hint">Forgot password? <a href="/owner/forgot-password">Reset Password</a></p>
+      <p class="hint">New owner? <a href="/owner/register">Register</a></p>
+      <p class="hint">Customer? <a href="/customer/login">Customer Login</a></p>
+    </div>
+
+    <footer>
+    <b>JBS Residency</b> &copy; 2026 &middot; <a href="/">Home</a>
+    </footer>
+  </div>
+</body>
+</html>
+
